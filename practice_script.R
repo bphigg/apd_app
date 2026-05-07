@@ -84,3 +84,6 @@ pd_force <- pd_force %>%
 pd_force_error <- filter(pd_force, desc_of_force == "ERROR")
 sum(is.na(pd_force$type_force_used))
 length(pd_force_error$ia_no)
+
+pd_force |> count(desc_of_force)
+help(count)
