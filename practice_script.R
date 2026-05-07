@@ -87,3 +87,11 @@ length(pd_force_error$ia_no)
 
 pd_force |> count(desc_of_force)
 help(count)
+
+table(pd_force$subject_race, pd_force$desc_of_force)
+pd_force |> count(subject_race)
+table(pd_force$county_location, pd_force$subject_race)
+bw_pdforce <- pd_force %>%
+  filter(subject_race == "Black" | subject_race == "White")
+
+table(bw_pdforce$county_location, bw_pdforce$subject_race)
