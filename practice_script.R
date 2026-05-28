@@ -1,6 +1,8 @@
 library(tidyverse)
 library(stringr)
 library(lubridate)
+install.packages("distributions3")
+library(distributions3)
 
 ## Read in Arrest Data
 arrests <- read_csv("apd/APD_Arrests.csv")
@@ -118,8 +120,27 @@ table(bw_pdforce$county_location, bw_pdforce$subject_race)
 
 ## 1) proportion of force incidents on Black
 n <- length(pd_force$subject_race)
-p <- length(filter(pd_force, subject_race == "Black")[[1]])/n
-print(p)
-n*p
-n*(1-p)
- 
+p_samp <- length(filter(pd_force, subject_race == "Black")[[1]])/n
+print(p_samp)
+p_pop <- 0.082
+n*p_pop
+n*(1-p_pop)
+
+## We a have population proportion of 8.2% Black residents in the city of Asheville. We have a sample proportion of 28.0% Black subjects in Asheville Police Dept Use of Force reports.
+## Question: is it feasible that the sample proportion falls within a 95% CI of the normal distribution of the population proportion?
+## H0 -> the proportion of use of force on Black residents is the same as the proportion of Black residents
+z_stat <- (p_samp-p_pop)/sqrt(p_pop*(1-p_pop)/n)
+Z <- Normal(0,1)
+p_stat <- 2 * cdf(Z, -abs(z_stat))
+print(p_stat)
+## didn't choose an alpha value, but the p_stat value is really close to zero, which tells us that it is highly unlikely that our sample proportion falls within the distribution of our population proportion. The two proportions are unrelated. So, why is the proportion of Black subjects in the Use of Force report significantly greater than the proportion of Black residents?
+
+zstat <- function(){
+  (p_samp-p_pop)/sqrt(p_pop*(1-p_pop)/n)
+}
+zstat()
+
+## proportion of arrests
+unique(arrests$offense_type)
+count(arrests, offense_type, subject_gender, sort = TRUE)
+arrests |> count(subject_gender)
