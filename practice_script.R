@@ -4,24 +4,6 @@ library(lubridate)
 install.packages("distributions3")
 library(distributions3)
 
-## Read in Arrest Data
-arrests <- read_csv("apd/APD_Arrests.csv")
-head(arrests)
-str(arrests)
-
-help(mutate)
-help("drop_na")
-
-## Generalize Address Column, add City and State
-arrests <- arrests %>%
-  mutate(address=str_remove_all(address, "-BLK")) %>%
-  mutate(city='Asheville') %>%
-  mutate(state='NC')
-
-## find date range
-max(arrests$date_arrested)
-min(arrests$date_arrested)
-
 ## read in Use of Force Files
 pd_force1 <- read_csv("apd/APD_Use_Of_Force_2021-2024.csv")
 str(pd_force1)
@@ -140,7 +122,40 @@ zstat <- function(){
 }
 zstat()
 
+## ARRESTS DATA
+
+## Read in Arrest Data
+arrests <- read_csv("apd/APD_Arrests.csv")
+head(arrests)
+str(arrests)
+
+help(mutate)
+help("drop_na")
+
+library(stringr)
+
+## Generalize Address Column, add City and State
+arrests <- arrests %>%
+  mutate(address=str_remove_all(address, "-BLK")) %>%
+  mutate(city='Asheville') %>%
+  mutate(state='NC') %>%
+  mutate(street_=word(address, 1)) %>%
+  mutate(street = if_else(str_detect(street_, "[A-Z]"), address, 
+                          word(address, 2, -1))) %>%
+  mutate(street_no = if_else(str_detect(street_, "[A-Z]"), "9999", 
+                             word(address, 1)))
+
+## find date range
+max(arrests$date_arrested)
+min(arrests$date_arrested)
+
 ## proportion of arrests
 unique(arrests$offense_type)
 count(arrests, offense_type, subject_gender, sort = TRUE)
 arrests |> count(subject_gender)
+count(arrests, address, sort = TRUE)
+count(arrests, street, sort=TRUE)
+
+hist(as.numeric(arrests$time_arrested), breaks=24)
+
+unique(filter(arrests, street == "BILTMORE AVE")$street_no)
