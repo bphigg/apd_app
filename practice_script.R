@@ -151,11 +151,19 @@ min(arrests$date_arrested)
 
 ## proportion of arrests
 unique(arrests$offense_type)
+unique(arrests$street)
 count(arrests, offense_type, subject_gender, sort = TRUE)
-arrests |> count(subject_gender)
+arrests |> count(subject_race)
 count(arrests, address, sort = TRUE)
 count(arrests, street, sort=TRUE)
 
 hist(as.numeric(arrests$time_arrested), breaks=24)
 
-unique(filter(arrests, street == "BILTMORE AVE")$street_no)
+unique(filter(arrests, street == "MELROSE AVE")$street_no)
+
+count(filter(arrests, street == "TUNNEL RD" & street_no == "100"), offense_type, sort=TRUE)
+count(filter(arrests, str_detect(street, "WOODVALE")), offense_type, sort=TRUE)
+
+count(filter(arrests, subject_gender == "F"), offense_type, sort = TRUE)
+
+# F/M split? does this same proportion hold by race?
